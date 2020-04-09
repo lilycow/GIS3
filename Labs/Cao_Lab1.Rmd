@@ -1,0 +1,42 @@
+---
+title: "Lab 1. Intro to RMarkdown & Github"
+author: "GIS 3 - Geocomputation - Spring 2020 - Lily Cao"
+output:
+  html_document:
+    theme: cosmo
+    toc: true
+    toc_float: true
+---
+
+# Show the R version you have installed
+```{r}
+version
+```
+
+# Load libraries of your choice
+```{r}
+library(tidyverse)
+library(sf)          
+library(raster)      
+library(spData)      
+library(spDataLarge) 
+library(sp)
+```
+
+# Include 2-3 code examples of R that you’ve learned as code chunks. 
+```{r}
+plot(world)
+```
+
+```{r}
+world[world$name_long == "United States", ]
+```
+
+```{r}
+us <- world[world$name_long == "United States", ]
+plot(st_geometry(us), expandBB = c(0,0,0,0), col = "blue", lwd = 4, border = "lightgrey")
+plot(st_geometry(world), lty = 3, add = TRUE, border = "grey")
+```
+
+# Is rendered using the output of your choice
+HTML
