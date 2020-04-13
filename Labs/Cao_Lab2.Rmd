@@ -1,0 +1,83 @@
+---
+title: "Lab 2. Descriptive Statistics and Basic Mapping"
+author: "GIS 3 - Geocomputation - Spring 2020 - Lily Cao"
+output:
+  html_document:
+    theme: cosmo
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+# Load libraries
+```{r}
+suppressMessages(library(sf))
+suppressMessages(library(raster))
+suppressMessages(library(dplyr))
+suppressMessages(library(stringr))
+suppressMessages(library(tidyr))
+suppressMessages(library(spData))
+suppressMessages(library(tmap))
+suppressMessages(library(maptools))
+suppressMessages(library(cartogram))
+suppressMessages(library(rgdal))
+```
+
+# Choose a spatial dataset and load as a spatial data frame
+```{r}
+df <- data.frame(us_states)
+head(df)
+```
+
+**Description:** I chose us_states, a spatial dataset from spData that contains data from the US Census Bureau and American Community Survey (ACS). There are 49 objects with 7 variables:  
+-GEOID: character vector of geographic identifiers. 
+
+-NAME: character vector of state names. 
+
+-REGION: character vector of region names. 
+
+-AREA: area in square kilometers of units class. 
+
+-total_pop_10: numerical vector of total population in 2010. 
+
+-total_pop_15: numerical vector of total population in 2015. 
+
+-geometry sfc_MULTIPOLYGON. 
+
+*Source:* https://www.rdocumentation.org/packages/spData/versions/0.3.3/topics/us_states 
+
+# Provide summary statistics for key variables
+```{r}
+summary(df)
+```
+
+**Description:** The summary() function provides summary statistics for each of the 7 variables. For example, there are 9 rows (states) labeled "Northeast", 12 for "Midwest", 17 for "South", and 11 for "West" under the "REGION" column. For "AREA", "total_pop_10," and "total_pop_15", we're given the quartiles, min/max, and mean. 
+
+# Generate a non-spatial plot of the variable of interest
+```{r}
+hist(df$total_pop_10, 
+     main = "Histogram for Total Population in 2010",
+     xlab = "Total Population",
+     border = "navy",
+     col = "maroon",
+     breaks = 50)
+```
+
+**Description:** The variable of interest here is total_pop_10 (the total population in 2010). The histogram is right-skewed, telling us that most states had populations less than 10,000,000 in 2010. The summary before told us that the maximum value for total_pop_10 is 36,637,290, which we can spot on the right end of the histogram (frequency = 1 so only one state has this value). I set the number of breaks (bins) to 50 so that the groups of total population are finer than the deafult.
+
+# Map the variable of interest
+```{r}
+us_2163 <- st_transform(us_states, 2163)
+plot(us_2163['total_pop_10'], 
+     main = "Map for Total Population in 2010")
+
+us_dorling <- cartogram_dorling(us_2163, "total_pop_10")
+plot(us_dorling['total_pop_10'],
+     main = "Dorling Cartogram for Total Population in 2010")
+```
+
+**Description:** Before mapping total_pop_10, I re-projected us_states to equal area projections (US National Atlas Equal Area). By mapping total_pop_10, we can see which states and regions have the lowest or highest populations across the U.S. For example, California is obviously the state with the highest population in 2010, and many states from the West and Midwest have the lowest 2010 population. Using the "cartogram" library and its cartogram_dorling function, I also created a Dorling cartogram, which uses sized circles to represent total_pop_10; the bigger the circle, the greater the population. This is useful because it's hard to differentiate the 2010 population differences for states with similar colors. 
+
+
+
